@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game Design Document - Desire of Life</title>
+    <style>
+        /* RESET FOR MOBILE */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* LOADING SCREEN ANIMATION STYLES */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff007f, #ffaa00, #ff007f); 
+            background-size: 400% 400%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: gradientShift 3s ease infinite, fadeOut 0.5s ease 2.5s forwards;
+            padding: 20px;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+        .intro-text {
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+        .intro-text h3 {
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 0;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+            color: #fffb00; 
+            text-shadow: 0 0 10px rgba(255,251,0,0.5);
+        }
+        .intro-text h1 {
+            font-size: 2.5em; 
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 10px 0 0 0;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+            color: #ffffff;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* MAIN WEBSITE STYLES */
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            line-height: 1.6;
+            padding: 10px; 
+        }
+        .container {
+            width: 100%;
+            max-width: 950px;
+            margin: 10px auto;
+            background: #161b22; 
+            padding: 20px; 
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .main-header {
+            color: #ff3e3e; 
+            text-align: center;
+            font-size: 2em; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(255, 62, 62, 0.4);
+        }
+        .subtitle {
+            text-align: center;
+            color: #58a6ff;
+            font-size: 1em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .dev-badge {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .dev-badge span {
+            background: linear-gradient(90deg, #ffaa00, #ff007f);
+            color: #fff;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+        }
+        h2 {
+            color: #00f0ff; 
+            margin-top: 30px;
+            border-left: 4px solid #00f0ff;
+            padding-left: 10px;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* TABLE RESPONSIVENESS */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto; 
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #21262d;
+            min-width: 500px; 
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        th {
+            background-color: #00f0ff;
+            color: #0d1117; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        td {
+            border-bottom: 1px solid #30363d;
+        }
+        tr:nth-child(even) {
+            background-color: #1f242c;
+        }
+        
+        ul {
+            background: #1f242c;
+            padding: 15px 25px 15px 35px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            list-style-type: square;
+            margin: 15px 0;
+        }
+        li {
+            margin-bottom: 8px;
+            color: #e6edf3;
+            font-size: 0.95em;
+        }
+        .badge {
+            background-color: #ff3e3e;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 5px;
+        }
+        .highlight {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+
+        /* VIDEO CONTAINER STYLE */
+        .video-container {
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            background: #21262d;
+        }
+        video {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ANIMATED LOADING SCREEN -->
+<div id="loading-screen">
+    <div class="intro-text">
+        <h3>Powered by MXA</h3>
+        <h1>Desire of Life</h1>
+    </div>
+</div>
+
+<!-- MAIN SITE CONTENT -->
+<div class="container">
+    <h1 class="main-header">Desire of Life</h1>
+    <div class="subtitle">Official Game Design Document</div>
+    <div class="dev-badge"><span>Developer: Powered by MXA</span></div>
+    
+    <h2>1. General Project Overview</h2>
+    <div class="table-responsive">
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td><strong>Developer</strong></td>
+                <td class="highlight">Powered by MXA</td>
+            </tr>
+            <tr>
+                <td><strong>Genre</strong></td>
+                <td>Battle Royale</td>
+            </tr>
+            <tr>
+                <td><strong>Platform</strong></td>
+                <td>Android</td>
+            </tr>
+            <tr>
+                <td><strong>Game Engine</strong></td>
+                <td>Unity</td>
+            </tr>
+            <tr>
+                <td><strong>Network Engine</strong></td>
+                <td class="highlight">Photon (PUN / Photon Fusion)</td>
+            </tr>
+            <tr>
+                <td><strong>Player Count</strong></td>
+                <td>Min: 15 | Max: 30 players per match</td>
+            </tr>
+            <tr>
+                <td><strong>Game Size</strong></td>
+                <td>Base Apk: ~70MB | Total Size: ~250MB</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>2. Development & Design Tools</h2>
+    <ul>
+        <li><strong>Character Modeling:</strong> Blender & Unity</li>
+        <li><strong>Animation:</strong> Blender</li>
+        <li><strong>Map Creation:</strong> Unity Terrain / ProBuilder & Blender (on Windows PC)</li>
+    </ul>
+
+    <h2>3. Character System (Total: 3 Characters)</h2>
+    <div class="table-responsive">
+        <table>
+            <tr>
+                <th>Character Name</th>
+                <th>Type/Gender</th>
+                <th>Ability Details</th>
+                <th>Cooldown</th>
+            </tr>
+            <tr>
+                <td class="highlight">Mie</td>
+                <td>Girl</td>
+                <td><strong>Speed Burst:</strong> Increases movement speed by 3x for 3 seconds.</td>
+                <td>15 Seconds</td>
+            </tr>
+            <tr>
+                <td class="highlight">Hetro</td>
+                <td>Boy</td>
+                <td><strong>Executioner:</strong> Instantly downs an enemy if their HP is below 70%.</td>
+                <td>9 Seconds</td>
+            </tr>
+            <tr>
+                <td class="highlight">Simpa</td>
+                <td>Boy/Girl</td>
+                <td>Normal Character (No special skills / Default Character)</td>
+                <td>N/A</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>4. Weapon Arsenal & Ranges</h2>
+    <div class="table-responsive">
+        <table>
+            <tr>
+                <th>Weapon Name</th>
+                <th>Weapon Type</th>
+                <th>Effective Range</th>
+                <th>Suggested Ammo Type <span class="badge">Ammo</span></th>
+            </tr>
+            <tr>
+                <td><strong>Desert Eagle</strong></td>
+                <td>Pistol</td>
+                <td>10 Meters</td>
+                <td>.50 AE Ammo</td>
+            </tr>
+            <tr>
+                <td><strong>UMP</strong></td>
+                <td>SMG</td>
+                <td>10 - 15 Meters</td>
+                <td>9mm Ammo</td>
+            </tr>
+            <tr>
+                <td><strong>AK</strong></td>
+                <td>AR (Assault Rifle)</td>
+                <td>15 - 20 Meters</td>
+                <td>7.62mm Ammo</td>
+            </tr>
+            <tr>
+                <td><strong>AWM</strong></td>
+                <td>Sniper Rifle</td>
+                <td>50 - 60 Meters</td>
+                <td>.300 Magnum</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>5. Map & Game Modes</h2>
+    <ul>
+        <li><strong>Map Name:</strong> Saru</li>
+        <li><strong>Map Size:</strong> 500m x 500m (Squad Mode Supported)</li>
+        <li><strong>Game Mode:</strong> Battle Royale (Survival Style)</li>
+        <li><strong>In-Game Items / Loot:</strong> Guns, Ammo, Health Packs/Medkits, Vests, and Helmets.</li>
+        <li><strong>Environmental System:</strong> Shrinking Safe Zone (Blue Zone).</li>
+    </ul>
+
+    <h2>6. Customization & Cosmetics (Inventory System)</h2>
+    <ul>
+        <li><strong>Head:</strong> 1 Slot (Hats, Caps, Hair Styles)</li>
+        <li><strong>Mask:</strong> 1 Slot (Face Masks, Glasses)</li>
+        <li><strong>T-Shirt:</strong> 1 Slot (Upper Body Clothes)</li>
+        <li><strong>Bottom:</strong> 1 Slot (Pants, Shorts)</li>
+        <li><strong>Gun Skins:</strong> Custom cosmetics for Desert Eagle, UMP, AK, and AWM.</li>
+    </ul>
+
+    <h2>7. Server & Database Infrastructure</h2>
+    <ul>
+        <li><strong>Local Server:</strong> Offline environment for testing physics & mechanics.</li>
+        <li><strong>Main Server Database:</strong> Main cloud database for permanent player profiles.</li>
+    </ul>
+    
+    <h3>Player Account Data Structure</h3>
+    <div class="table-responsive">
+        <table>
+            <tr>
+                <th>Data Field</th>
+                <th>Data Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><strong>Name</strong></td>
+                <td>String</td>
+                <td>Player's in-game nickname</td>
+            </tr>
+            <tr>
+                <td><strong>UID</strong></td>
+                <td>String/Integer</td>
+                <td>Unique Identification Number</td>
+            </tr>
+            <tr>
+                <td><strong>Character</strong></td>
+                <td>ID / String</td>
+                <td>Currently equipped character (Mie, Hetro, or Simpa)</td>
+            </tr>
+            <tr>
+                <td><strong>Gun Skins</strong></td>
+                <td>Array / List</td>
+                <td>Owned weapon cosmetics inventory</td>
+            </tr>
+            <tr>
+                <td><strong>Equipments</strong></td>
+                <td>Array / List</td>
+                <td>Unlocked Head, Mask, T-Shirt, and Bottom items</td>
+            </tr>
+            <tr>
+                <td><strong>Gold</strong></td>
+                <td>Integer</td>
+                <td>Free in-game currency earned from playing</td>
+            </tr>
+            <tr>
+                <td><strong>Diamond</strong></td>
+                <td>Integer</td>
+                <td>Premium currency via store purchases</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SABSE NICHE VIDEO KA SECTION -->
+    <h2>8. Official Gameplay Video / Teaser</h2>
+    <div class="video-container">
+        <video controls preload="metadata">
+            <source src="gameplay.mp4" type="video/mp4">
+            Aapka browser video support nahi karta.
+        </video>
+    </div>
+</div>
+
+</body>
+</html>
